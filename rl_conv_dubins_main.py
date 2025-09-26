@@ -39,7 +39,7 @@ bank.clip_sensor_range(parameter='pCO2', min=sensor_range[0], max=sensor_range[1
 device = None
 if device is None:
     if torch.cuda.is_available():
-        device = torch.device("cuda:1")
+        device = torch.device("cuda")
     else:
         device = torch.device("cpu")
 
