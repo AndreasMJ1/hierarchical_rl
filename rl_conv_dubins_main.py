@@ -27,7 +27,7 @@ importlib.reload(gpt_class_exactgpmodel)
 # %%
 bank = rl_scenario_bank.ScenarioBank(data_dir='.')
 
-envs_file = 'tensor_envs/1c_pCO2_67_69.pt'
+envs_file = '/projects/robin/users/ivarkriw/tensor_envs/1c_pCO2_67_69.pt'
 bank.load_envs(envs_file)
 sensor_range = [0, 2000]
 bank.clip_sensor_range(parameter='pCO2', min=sensor_range[0], max=sensor_range[1])
