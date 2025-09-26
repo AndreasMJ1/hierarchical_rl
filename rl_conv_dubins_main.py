@@ -44,7 +44,7 @@ if device is None:
         device = torch.device("cpu")
 
 turn_radius = 25
-channels = np.array([1, 1, 0, 0, 0])
+channels = np.array([1, 0, 0, 0, 0])
 
 env = rl_gas_survey_dubins_env.GasSurveyDubinsEnv(bank, gp_pred_resolution=[100, 100], r_weights=[1.0, 10.0, 1.0], channels=channels, turn_radius=turn_radius, timer=False, debug=True, device=device)
 
@@ -123,7 +123,7 @@ else:
     agent.replay_buffer = replay_buffer          # overwrite in place
 
 # %%
-TIMESTEPS = 2400
+TIMESTEPS = 500_000
 #TIMESTEPS = 10000
 
 while True:
