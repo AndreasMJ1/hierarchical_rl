@@ -44,7 +44,8 @@ if device is None:
         device = torch.device("cpu")
 
 turn_radius = 25
-channels = np.array([1, 0, 0, 0, 0])
+channels = np.array([1, 0, 0, 0, 0]) #exploit
+# channels = np.array([0, 1, 0, 0, 0]) #explore
 
 env = rl_gas_survey_dubins_env.GasSurveyDubinsEnv(bank, gp_pred_resolution=[100, 100], r_weights=[1.0, 10.0, 1.0], channels=channels, turn_radius=turn_radius, timer=False, debug=True, device=device)
 
@@ -62,7 +63,7 @@ replay_buffer = rl_gas_survey_dubins_env.CpuDictReplayBuffer(
 # %%
 host = socket.gethostname().split('.')[0]
 if host in ['dunder', 'cupid', 'dancer', 'rudolph', 'dasher']:
-    parent_dir = "/projects/robin/users/ivarkriw"
+    parent_dir = "/projects/robin/users/ivarkriw/in5490"
     log_interval = 100
 else:
     parent_dir = '.'
