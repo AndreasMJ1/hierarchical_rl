@@ -39,12 +39,16 @@ bank.clip_sensor_range(parameter='pCO2', min=sensor_range[0], max=sensor_range[1
 device = None
 if device is None:
     if torch.cuda.is_available():
-        device = torch.device("cuda")
+        device = torch.device("cuda:1")
     else:
         device = torch.device("cpu")
 
 turn_radius = 25
+<<<<<<< Updated upstream
 channels = np.array([1, 1, 0, 0, 0])
+=======
+channels = np.array([0, 1, 0, 0, 0])
+>>>>>>> Stashed changes
 
 env = rl_gas_survey_dubins_env.GasSurveyDubinsEnv(bank, gp_pred_resolution=[100, 100], r_weights=[1.0, 10.0, 1.0], channels=channels, turn_radius=turn_radius, timer=False, debug=True, device=device)
 
