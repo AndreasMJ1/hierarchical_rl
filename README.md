@@ -8,4 +8,6 @@ Motivation and Introduction
 Related Work
 Methods
 
+- [ ] Design and evaluate exploitative agent
 
+- [ ] Design and evaluate meta agent 
