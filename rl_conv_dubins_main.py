@@ -27,7 +27,7 @@ importlib.reload(gpt_class_exactgpmodel)
 # %%
 bank = rl_scenario_bank.ScenarioBank(data_dir='.')
 
-envs_file = 'tensor_envs/1c_pCO2_67_69.pt'
+envs_file = '/projects/robin/users/ivarkriw/tensor_envs/1c_pCO2_67_69.pt'
 bank.load_envs(envs_file)
 sensor_range = [0, 2000]
 bank.clip_sensor_range(parameter='pCO2', min=sensor_range[0], max=sensor_range[1])
@@ -44,11 +44,10 @@ if device is None:
         device = torch.device("cpu")
 
 turn_radius = 25
-<<<<<<< Updated upstream
-channels = np.array([1, 1, 0, 0, 0])
-=======
-channels = np.array([0, 1, 0, 0, 0])
->>>>>>> Stashed changes
+
+channels = np.array([0, 1, 0, 0, 0]) # only explore
+# channels = np.array([1, 0, 0, 0, 0]) # only gas
+
 
 env = rl_gas_survey_dubins_env.GasSurveyDubinsEnv(bank, gp_pred_resolution=[100, 100], r_weights=[1.0, 10.0, 1.0], channels=channels, turn_radius=turn_radius, timer=False, debug=True, device=device)
 
@@ -66,7 +65,7 @@ replay_buffer = rl_gas_survey_dubins_env.CpuDictReplayBuffer(
 # %%
 host = socket.gethostname().split('.')[0]
 if host in ['dunder', 'cupid', 'dancer', 'rudolph', 'dasher']:
-    parent_dir = "/projects/robin/users/ivarkriw"
+    parent_dir = "/projects/robin/users/ivarkriw/in5490"
     log_interval = 100
 else:
     parent_dir = '.'
@@ -127,7 +126,7 @@ else:
     agent.replay_buffer = replay_buffer          # overwrite in place
 
 # %%
-TIMESTEPS = 2400
+TIMESTEPS = 500_000
 #TIMESTEPS = 10000
 
 while True:

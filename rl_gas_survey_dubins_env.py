@@ -338,6 +338,13 @@ class GasSurveyDubinsEnv(gym.Env):
         
         if self.channels[0] == 0 and self.channels[1] == 1:
             reward = self._reward_ch_01000(old_var)
+
+        elif self.channels[0] == 1 and self.channels[1] == 0:
+            if self.reward_func == 'e2e':
+                reward = self._reward_e2e(old_pred_mu)
+            else:
+                reward = self._reward_ch_10000(old_var, measurements)
+                
         elif self.channels[0] == 1 and self.channels[1] == 1:
             if self.reward_func == 'e2e':
                 reward = self._reward_e2e(old_pred_mu)
@@ -417,11 +424,6 @@ class GasSurveyDubinsEnv(gym.Env):
         r_gas = (measurements_norm >= 20).sum()/len(measurements_norm) # Everything above 255/20 contributes to reward
         r_dist = -1.0 # step penalty (for changing course)
         r_term = 0.0
-
-        #if self.pred_var_norm.mean() <= 100:
-            #r_term = self.n_steps_max - self.n_steps
-        #    r_term = 5.0
-        #    self.terminated = True
         
         reward = self.a_gas*r_gas + self.a_var*r_var + self.a_dist*r_dist + r_term
         
@@ -429,6 +431,24 @@ class GasSurveyDubinsEnv(gym.Env):
             print(f'r_gas: {r_gas:.4}, r_var: {r_var:.4}, r_dist: {r_dist:.4}, r_tot: {reward:.4}')
 
         return reward
+    
+    def _reward_ch_10000(self, old_var, measurements):
+        # compute reward (based on gas measurements only)
+
+        # measurements have to be normalized in the same manner as the GP estimate:
+        measurements_norm = (measurements - self.min_concentration) / (self.max_concentration - self.min_concentration) * 255
+        
+        r_gas = (measurements_norm >= 20).sum()/len(measurements_norm) # Everything above 255/20 contributes to reward
+        r_dist = -1.0 # step penalty (for changing course)
+        r_term = 0.0
+        
+        reward = self.a_gas*r_gas + self.a_dist*r_dist + r_term
+        
+        if self.debug:
+            print(f'r_gas: {r_gas:.4}, r_dist: {r_dist:.4}, r_tot: {reward:.4}')
+
+        return reward
+
 
     def _onehot_to_rad(self, heading_1hot):
         '''
