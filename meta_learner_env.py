@@ -34,7 +34,7 @@ class MetaSelectEnv(gym.Env):
         low_actions = []
         info_last = {}
         obs = self._last_obs
-        print(f"MetaSelectEnv: selected model {'B' if int(select_action) == 1 else 'A'} for next {self.chunk_len} steps")
+        #print(f"MetaSelectEnv: selected model {'B' if int(select_action) == 1 else 'A'} for next {self.chunk_len} steps")
 
         for _ in range(self.chunk_len):
             # Decide low-level action using the chosen model
