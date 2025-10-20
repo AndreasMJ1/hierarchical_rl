@@ -48,7 +48,7 @@ turn_radius = 25
 #channels = np.array([0, 1, 0, 0, 0]) # only explore
 channels = np.array([1, 0, 0, 0, 0]) # only gas
 
-env = rl_gas_survey_dubins_env.GasSurveyDubinsEnv(bank, gp_pred_resolution=[100, 100], r_weights=[1.0, 10.0, 1.0], channels=channels, turn_radius=turn_radius, timer=False, debug=False, device=device)
+env = rl_gas_survey_dubins_env.GasSurveyDubinsEnv(bank, gp_pred_resolution=[100, 100], r_weights=[10.0, 10.0, 1.0], channels=channels, turn_radius=turn_radius, timer=False, debug=False, device=device)
 
 buffer_size = 400_000                      # how many transitions
 
