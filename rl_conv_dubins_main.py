@@ -17,17 +17,18 @@ import rl_scenario_bank
 import rl_gas_survey_dubins_env
 import chem_utils
 import gpt_class_exactgpmodel
+import meta_learner_env
 
 # %%
 importlib.reload(rl_gas_survey_dubins_env)
 importlib.reload(rl_scenario_bank)
 importlib.reload(chem_utils)
 importlib.reload(gpt_class_exactgpmodel)
-
+importlib.reload(meta_learner_env)
 # %%
 bank = rl_scenario_bank.ScenarioBank(data_dir='.')
 
-envs_file = '/projects/robin/users/ivarkriw/tensor_envs/1c_pCO2_67_69.pt'
+envs_file = 'tensor_envs/1c_pCO2_67_69.pt'
 bank.load_envs(envs_file)
 sensor_range = [0, 2000]
 bank.clip_sensor_range(parameter='pCO2', min=sensor_range[0], max=sensor_range[1])
@@ -44,10 +45,10 @@ if device is None:
         device = torch.device("cpu")
 
 turn_radius = 25
-channels = np.array([0, 1, 0, 0, 0]) # only explore
-# channels = np.array([1, 0, 0, 0, 0]) # only gas
+#channels = np.array([0, 1, 0, 0, 0]) # only explore
+channels = np.array([1, 0, 0, 0, 0]) # only gas
 
-env = rl_gas_survey_dubins_env.GasSurveyDubinsEnv(bank, gp_pred_resolution=[100, 100], r_weights=[1.0, 10.0, 1.0], channels=channels, turn_radius=turn_radius, timer=False, debug=True, device=device)
+env = rl_gas_survey_dubins_env.GasSurveyDubinsEnv(bank, gp_pred_resolution=[100, 100], r_weights=[1.0, 10.0, 1.0], channels=channels, turn_radius=turn_radius, timer=False, debug=False, device=device)
 
 buffer_size = 400_000                      # how many transitions
 
@@ -104,10 +105,16 @@ else:
         features_extractor_class=rl_gas_survey_dubins_env.MapPlusLocExtractor,
         features_extractor_kwargs=dict(features_dim=512),
     )
-
+    # Load model from zip-file
+    # loading saved models
+    path = models_parent + "/"
+    explorer = path + "explorer_model" + "/0_1019953"
+    exploiter = path + "exploiter_model" + "/0_3340000"
+    agent1 = DQN.load(explorer, env=env, device=env.device)
+    agent2 = DQN.load(exploiter, env=env, device=env.device)
     agent = DQN(
         "MultiInputPolicy",
-        env,                        # env returns {"map": ..., "loc": ...}
+        env=meta_learner_env.MetaSelectEnv(env, agent1, agent2),  # env returns {"map": ..., "loc": ...}
         device=env.device,
         buffer_size=buffer_size,
         batch_size=256,
@@ -124,8 +131,8 @@ else:
     agent.replay_buffer = replay_buffer          # overwrite in place
 
 # %%
-TIMESTEPS = 500_000
-#TIMESTEPS = 10000
+#TIMESTEPS = 5_000
+TIMESTEPS = 10_000
 
 while True:
     agent.learn(
