@@ -420,8 +420,8 @@ class GasSurveyDubinsEnv(gym.Env):
         # r_gas is based on the newly acquired samples.
         # measurements have to be normalized in the same manner as the GP estimate:
         measurements_norm = (measurements - self.min_concentration) / (self.max_concentration - self.min_concentration) * 255
-        
-        r_gas = (measurements_norm >= 20).sum()/len(measurements_norm) # Everything above 255/20 contributes to reward
+
+        r_gas = (measurements_norm >= 5).sum()/len(measurements_norm) # Everything above 255/5 contributes to reward
         r_dist = -1.0 # step penalty (for changing course)
         r_term = 0.0
         

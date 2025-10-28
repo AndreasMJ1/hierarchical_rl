@@ -46,9 +46,10 @@ if device is None:
 
 turn_radius = 25
 #channels = np.array([0, 1, 0, 0, 0]) # only explore
-channels = np.array([1, 0, 0, 0, 0]) # only gas
+#channels = np.array([1, 0, 0, 0, 0]) # only gas
+channels = np.array([1, 1, 0, 0, 0]) # gas + explore
 
-env = rl_gas_survey_dubins_env.GasSurveyDubinsEnv(bank, gp_pred_resolution=[100, 100], r_weights=[10.0, 10.0, 1.0], channels=channels, turn_radius=turn_radius, timer=False, debug=False, device=device)
+env = rl_gas_survey_dubins_env.GasSurveyDubinsEnv(bank, gp_pred_resolution=[100, 100], r_weights=[10.0, 1.0, 1.0], channels=channels, turn_radius=turn_radius, timer=False, debug=False, device=device)
 
 buffer_size = 400_000                      # how many transitions
 
@@ -110,8 +111,8 @@ else:
     path = models_parent + "/"
     explorer = path + "explorer_model" + "/0_1019953"
     exploiter = path + "exploiter_model" + "/0_3340000"
-    agent1 = DQN.load(explorer, env=env, device=env.device)
-    agent2 = DQN.load(exploiter, env=env, device=env.device)
+    agent1 = DQN.load(explorer, device=env.device)
+    agent2 = DQN.load(exploiter, device=env.device)
     agent = DQN(
         "MultiInputPolicy",
         env=meta_learner_env.MetaSelectEnv(env, agent1, agent2),  # env returns {"map": ..., "loc": ...}
