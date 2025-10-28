@@ -35,11 +35,12 @@ class MetaSelectEnv(gym.Env):
             # Exploiter (model_b) → channel 0
             channel_idx = 0
 
-        child_obs = {
-            "loc": obs["loc"],
-            "map": obs["map"][channel_idx:channel_idx + 1, :, :],
-        }
+        # Copy the observation dict and replace only the map slice
+        child_obs = dict(obs)  # shallow copy preserves other keys like "hdg", "vel", etc.
+        child_obs["map"] = obs["map"][channel_idx:channel_idx + 1, :, :]
+
         return child_obs
+
 
     def step(self, select_action: int):
         # Select the model based on meta-action
