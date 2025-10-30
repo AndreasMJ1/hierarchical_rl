@@ -49,7 +49,10 @@ done = False
 rewards = np.array([])
 
 coverage = []
-max_environments = 1
+max_environments = 100
+
+mu_mapping = True 
+mu = []
 for environment in range(max_environments):
     obs, _ = env.reset()
 
@@ -58,12 +61,21 @@ for environment in range(max_environments):
         obs, reward, terminated, truncated, info = env.step(int(action))
         rewards = np.append(rewards, reward)
 
+    if mu_mapping:
+        mask = env.pred_mu < env.min_concentration
+        env.pred_mu[mask] = env.min_concentration
+        mu.append(np.mean(abs(env.pred_mu-env.obs_truth)))
+
     #After every environment
     total_gas = (((env.values - env.min_concentration) / (env.max_concentration - env.min_concentration) * 255) >= 5).sum()
 
     total_gas_smp = (((env.sampled_vals[:env.sample_idx] - env.min_concentration) / (env.max_concentration - env.min_concentration) * 255) >= 5).sum()
     percentage_gas_sampled = ((total_gas_smp) / (total_gas)) * 100
     coverage.append(percentage_gas_sampled)
+
+    if mu_mapping:
+        print(f"Mean absolute error in GP mean prediction: {mu[-1]:.4f}")
+        np.save("mu_dqn_exploit.npy", np.array(mu))
     np.save("coverage_dqn_exploit.npy", np.array(coverage))
 
 
@@ -75,3 +87,5 @@ for environment in range(max_environments):
 np.save("coverage_dqn_exploit.npy", np.array(coverage))
 
 
+
+# %%
